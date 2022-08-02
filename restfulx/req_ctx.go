@@ -2,19 +2,17 @@ package restfulx
 
 import (
 	"github.com/XM-GO/PandaKit/biz"
-	"github.com/XM-GO/PandaKit/ginx"
 	"github.com/XM-GO/PandaKit/token"
+	"github.com/emicklei/go-restful/v3"
 	"time"
-
-	"github.com/gin-gonic/gin"
 )
 
 // 处理函数
 type HandlerFunc func(*ReqCtx)
 
 type ReqCtx struct {
-	GinCtx *gin.Context // gin context
-
+	Request  *restful.Request
+	Response *restful.Response
 	// NeedToken          bool                // 是否需要token
 	RequiredPermission *Permission   // 需要的权限信息，默认为nil，需要校验token
 	LoginAccount       *token.Claims // 登录账号信息，只有校验token后才会有值
@@ -29,18 +27,18 @@ type ReqCtx struct {
 }
 
 func (rc *ReqCtx) Handle(handler HandlerFunc) {
-	ginCtx := rc.GinCtx
+	request := rc.Response
 	defer func() {
 		var err any
 		err = recover()
 		if err != nil {
 			rc.Err = err
-			ginx.ErrorRes(ginCtx, err)
+			ErrorRes(request, err)
 		}
 		// 应用所有请求后置处理器
 		ApplyHandlerInterceptor(afterHandlers, rc)
 	}()
-	biz.IsTrue(ginCtx != nil, "ginContext == nil")
+	biz.IsTrue(rc.Request != nil, "Request == nil")
 
 	// 默认为不记录请求参数，可在handler回调函数中覆盖赋值
 	rc.ReqParam = 0
@@ -57,22 +55,27 @@ func (rc *ReqCtx) Handle(handler HandlerFunc) {
 	handler(rc)
 	rc.timed = time.Now().Sub(begin).Milliseconds()
 	if !rc.noRes {
-		ginx.SuccessRes(ginCtx, rc.ResData)
+		SuccessRes(rc.Response, rc.ResData)
 	}
 }
 
 func (rc *ReqCtx) Download(filename string) {
 	rc.noRes = true
-	ginx.Download(rc.GinCtx, filename)
+	Download(rc.Response, filename)
 }
 
-func NewReqCtx(g *gin.Context) *ReqCtx {
-	return &ReqCtx{GinCtx: g, RequiredPermission: &Permission{NeedToken: true, NeedCasbin: true}}
+func NewReqCtx(request *restful.Request, response *restful.Response) *ReqCtx {
+	return &ReqCtx{
+		Request:            request,
+		Response:           response,
+		LogInfo:            NewLogInfo("默认日志信息"),
+		RequiredPermission: &Permission{NeedToken: true, NeedCasbin: true},
+	}
 }
 
 // 调用该方法设置请求描述，则默认记录日志，并不记录响应结果
-func (r *ReqCtx) WithLog(li *LogInfo) *ReqCtx {
-	r.LogInfo = li
+func (r *ReqCtx) WithLog(model string) *ReqCtx {
+	r.LogInfo.Description = model
 	return r
 }
 

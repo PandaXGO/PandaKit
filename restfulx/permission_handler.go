@@ -3,6 +3,7 @@ package restfulx
 import (
 	"github.com/XM-GO/PandaKit/biz"
 	"github.com/XM-GO/PandaKit/casbin"
+	"github.com/XM-GO/PandaKit/config"
 	"github.com/XM-GO/PandaKit/token"
 	"github.com/dgrijalva/jwt-go"
 	"strconv"
@@ -29,10 +30,10 @@ func PermissionHandler(rc *ReqCtx) error {
 	if permission != nil && !permission.NeedToken {
 		return nil
 	}
-	tokenStr := rc.GinCtx.Request.Header.Get("X-TOKEN")
+	tokenStr := rc.Request.Request.Header.Get("X-TOKEN")
 	// header不存在则从查询参数token中获取
 	if tokenStr == "" {
-		tokenStr = rc.GinCtx.Query("token")
+		tokenStr = rc.Request.QueryParameter("token")
 	}
 	if tokenStr == "" {
 		return biz.PermissionErr
@@ -50,7 +51,7 @@ func PermissionHandler(rc *ReqCtx) error {
 	e := casbin.Casbin()
 	// 判断策略中是否存在
 	tenantId := strconv.Itoa(int(rc.LoginAccount.TenantId))
-	success, err := e.Enforce(tenantId, loginAccount.RoleKey, rc.GinCtx.Request.URL.Path, rc.GinCtx.Request.Method)
+	success, err := e.Enforce(tenantId, loginAccount.RoleKey, rc.Request.Request.URL.Path, rc.Request.Request.Method)
 	if !success {
 		return biz.CasbinErr
 	}

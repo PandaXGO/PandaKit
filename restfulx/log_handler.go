@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/XM-GO/PandaKit/biz"
+	"github.com/XM-GO/PandaKit/logger"
 	"github.com/XM-GO/PandaKit/utils"
 	"reflect"
 	"runtime/debug"
@@ -37,7 +38,7 @@ func LogHandler(rc *ReqCtx) error {
 		lfs["uname"] = la.UserName
 	}
 
-	req := rc.GinCtx.Request
+	req := rc.Request.Request
 	lfs[req.Method] = req.URL.Path
 
 	if err := rc.Err; err != nil {
