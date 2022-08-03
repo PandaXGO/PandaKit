@@ -10,14 +10,8 @@ import (
 	"strconv"
 )
 
-// 绑定并校验请求结构体参数  结构体添加 例如： binding:"required" 或binding:"required,gt=10"
-func BindJsonAndValid(rc *ReqCtx, data any) {
-	if err := rc.Request.ReadEntity(data); err != nil {
-		panic(any(biz.NewBizErr("传参格式错误：" + err.Error())))
-	}
-}
-
 // BindQuery 绑定查询字符串到
+// 绑定并校验请求结构体参数  结构体添加 例如： binding:"required" 或binding:"required,gt=10"
 func BindQuery(rc *ReqCtx, data any) {
 	if err := rc.Request.ReadEntity(data); err != nil {
 		panic(any(biz.NewBizErr(err.Error())))
@@ -40,7 +34,7 @@ func GetPageQueryParam(rc *ReqCtx) *model.PageParam {
 	return &model.PageParam{PageNum: QueryInt(rc, "pageNum", 1), PageSize: QueryInt(rc, "pageSize", 10)}
 }
 
-// 获取查询参数中指定参数值，并转为int
+// QueryInt 获取查询参数中指定参数值，并转为int
 func QueryInt(rc *ReqCtx, qm string, defaultInt int) int {
 	qv := rc.Request.QueryParameter(qm)
 	if qv == "" {
@@ -61,9 +55,8 @@ func PathParamInt(rc *ReqCtx, pm string) int {
 	value, _ := strconv.Atoi(rc.Request.PathParameter(pm))
 	return value
 }
-func PathParam(rc *ReqCtx, pm string) int {
-	value, _ := strconv.Atoi(rc.Request.PathParameter(pm))
-	return value
+func PathParam(rc *ReqCtx, pm string) string {
+	return rc.Request.PathParameter(pm)
 }
 
 // 文件下载
