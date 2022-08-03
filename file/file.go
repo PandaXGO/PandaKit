@@ -2,6 +2,7 @@ package utilFile
 
 import (
 	"io"
+	"mime/multipart"
 	"net/http"
 	"os"
 )
@@ -29,5 +30,22 @@ func DownloadFile(url, filepath string) error {
 	defer out.Close()
 	// Write the body to file
 	_, err = io.Copy(out, resp.Body)
+	return err
+}
+
+func SaveUploadedFile(file *multipart.FileHeader, dst string) error {
+	src, err := file.Open()
+	if err != nil {
+		return err
+	}
+	defer src.Close()
+
+	out, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	_, err = io.Copy(out, src)
 	return err
 }
