@@ -61,7 +61,7 @@ func (rc *ReqCtx) Handle(handler HandlerFunc) {
 
 func (rc *ReqCtx) Download(filename string) {
 	rc.noRes = true
-	Download(rc.Response, filename)
+	Download(rc.Request, rc.Response, filename)
 }
 
 func NewReqCtx(request *restful.Request, response *restful.Response) *ReqCtx {
