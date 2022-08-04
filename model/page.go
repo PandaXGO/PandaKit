@@ -7,8 +7,9 @@ type PageParam struct {
 	Params   string `json:"params"`
 }
 
-// 分页结果
-type PageResult struct {
-	Total int64 `json:"total"`
-	List  any   `json:"list"`
+type ResultPage struct {
+	Total    int16 `json:"total"`
+	PageNum  int16 `json:"pageNum"`
+	PageSize int16 `json:"pageSize"`
+	Data     any   `json:"data"`
 }
