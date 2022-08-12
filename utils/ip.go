@@ -6,7 +6,7 @@ import (
 	"net"
 )
 
-const ipurl = "http://whois.pconline.com.cn/ipJson.jsp"
+const ipurl = "https://ip.cn/api/index"
 
 const UNKNOWN = "XX XX"
 
@@ -15,7 +15,7 @@ func GetRealAddressByIP(ip string) string {
 	if ip == "127.0.0.1" || ip == "localhost" {
 		return "内部IP"
 	}
-	url := fmt.Sprintf("%s?ip=%s&json=true", ipurl, ip)
+	url := fmt.Sprintf("%s?ip=%s&type=1", ipurl, ip)
 
 	res := httpclient.NewRequest(url).Get()
 	if res == nil || res.StatusCode != 200 {
@@ -25,8 +25,7 @@ func GetRealAddressByIP(ip string) string {
 	if err != nil {
 		return UNKNOWN
 	}
-	//log.Println(fmt.Sprintf("%s %s",toMap["pro"].(string),toMap["city"].(string)))
-	return toMap["addr"].(string)
+	return toMap["address"].(string)
 }
 
 // 获取局域网ip地址
