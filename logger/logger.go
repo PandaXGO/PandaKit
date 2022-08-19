@@ -26,13 +26,13 @@ func InitLog(fileName, level string) *logrus.Logger {
 	} else {
 		Log.SetLevel(logrus.DebugLevel)
 	}
-
-	file, err := os.OpenFile(fileName, os.O_CREATE|os.O_APPEND|os.O_WRONLY, os.ModeAppend|0666)
-	if err != nil {
-		panic(any(fmt.Sprintf("创建日志文件失败: %s", err.Error())))
+	if fileName != "" {
+		file, err := os.OpenFile(fileName, os.O_CREATE|os.O_APPEND|os.O_WRONLY, os.ModeAppend|0666)
+		if err != nil {
+			panic(any(fmt.Sprintf("创建日志文件失败: %s", err.Error())))
+		}
+		Log.Out = file
 	}
-
-	Log.Out = file
 
 	return Log
 }

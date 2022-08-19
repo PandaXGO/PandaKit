@@ -23,7 +23,7 @@ type ReqCtx struct {
 	ResData  any      // 响应结果
 	Err      any      // 请求错误
 
-	timed int64 // 执行时间
+	Timed int64 // 执行时间
 	noRes bool  // 无需返回结果，即文件下载等
 }
 
@@ -54,7 +54,7 @@ func (rc *ReqCtx) Handle(handler HandlerFunc) {
 
 	begin := time.Now()
 	handler(rc)
-	rc.timed = time.Now().Sub(begin).Milliseconds()
+	rc.Timed = time.Now().Sub(begin).Milliseconds()
 	if !rc.noRes {
 		SuccessRes(ginCtx, rc.ResData)
 	}
