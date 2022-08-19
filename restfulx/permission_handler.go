@@ -3,7 +3,6 @@ package restfulx
 import (
 	"github.com/XM-GO/PandaKit/biz"
 	"github.com/XM-GO/PandaKit/casbin"
-	"github.com/XM-GO/PandaKit/config"
 	"github.com/XM-GO/PandaKit/token"
 	"github.com/dgrijalva/jwt-go"
 	"strconv"
@@ -38,7 +37,7 @@ func PermissionHandler(rc *ReqCtx) error {
 	if tokenStr == "" {
 		return biz.PermissionErr
 	}
-	j := token.NewJWT("", []byte(config.Conf.Jwt.Key), jwt.SigningMethodHS256)
+	j := token.NewJWT("", []byte("PandaX"), jwt.SigningMethodHS256)
 	loginAccount, err := j.ParseToken(tokenStr)
 	if err != nil || loginAccount == nil {
 		return biz.PermissionErr

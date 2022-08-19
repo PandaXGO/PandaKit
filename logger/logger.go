@@ -2,7 +2,6 @@ package logger
 
 import (
 	"fmt"
-	"github.com/XM-GO/PandaKit/config"
 	"os"
 	"strings"
 	"time"
@@ -12,19 +11,13 @@ import (
 
 var Log *logrus.Logger
 
-func InitLog(logConf *config.Log) *logrus.Logger {
+func InitLog(fileName, level string) *logrus.Logger {
 	Log = logrus.New()
 	Log.SetFormatter(new(LogFormatter))
 	Log.SetReportCaller(true)
 
-	// 如果不存在日志配置信息，则默认debug级别
-	if logConf == nil {
-		Log.SetLevel(logrus.DebugLevel)
-		return nil
-	}
-
 	// 根据配置文件设置日志级别
-	if level := logConf.Level; level != "" {
+	if level != "" {
 		l, err := logrus.ParseLevel(level)
 		if err != nil {
 			panic(any(fmt.Sprintf("日志级别不存在: %s", level)))
@@ -34,15 +27,13 @@ func InitLog(logConf *config.Log) *logrus.Logger {
 		Log.SetLevel(logrus.DebugLevel)
 	}
 
-	if logFile := logConf.File; logFile != nil {
-		//写入文件
-		file, err := os.OpenFile(logFile.GetFilename(), os.O_CREATE|os.O_APPEND|os.O_WRONLY, os.ModeAppend|0666)
-		if err != nil {
-			panic(any(fmt.Sprintf("创建日志文件失败: %s", err.Error())))
-		}
-
-		Log.Out = file
+	file, err := os.OpenFile(fileName, os.O_CREATE|os.O_APPEND|os.O_WRONLY, os.ModeAppend|0666)
+	if err != nil {
+		panic(any(fmt.Sprintf("创建日志文件失败: %s", err.Error())))
 	}
+
+	Log.Out = file
+
 	return Log
 }
 

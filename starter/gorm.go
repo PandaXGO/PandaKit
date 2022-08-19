@@ -2,7 +2,6 @@ package starter
 
 import (
 	"database/sql"
-	"github.com/XM-GO/PandaKit/config"
 	"github.com/XM-GO/PandaKit/logger"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
@@ -16,29 +15,32 @@ import (
 
 var Db *gorm.DB
 
-func GormInit(ty string) *gorm.DB {
-	switch ty {
+type DbGorm struct {
+	Type         string
+	Dsn          string
+	MaxIdleConns int
+	MaxOpenConns int
+}
+
+func (dg *DbGorm) GormInit() *gorm.DB {
+	switch dg.Type {
 	case "mysql":
-		Db = GormMysql()
+		Db = dg.GormMysql()
 	case "postgresql":
-		Db = GormPostgresql()
+		Db = dg.GormPostgresql()
 	}
 	return Db
 }
-func GormMysql() *gorm.DB {
-	m := config.Conf.Mysql
-	if m == nil || m.Dbname == "" {
-		logger.Log.Panic("未找到数据库配置信息")
-		return nil
-	}
-	logger.Log.Infof("连接mysql [%s]", m.Host)
+func (dg *DbGorm) GormMysql() *gorm.DB {
+
+	logger.Log.Infof("连接mysql [%s]", dg.Dsn)
 	mysqlConfig := mysql.Config{
-		DSN:                       m.Dsn(), // DSN data source name
-		DefaultStringSize:         191,     // string 类型字段的默认长度
-		DisableDatetimePrecision:  true,    // 禁用 datetime 精度，MySQL 5.6 之前的数据库不支持
-		DontSupportRenameIndex:    true,    // 重命名索引时采用删除并新建的方式，MySQL 5.7 之前的数据库和 MariaDB 不支持重命名索引
-		DontSupportRenameColumn:   true,    // 用 `change` 重命名列，MySQL 8 之前的数据库和 MariaDB 不支持重命名列
-		SkipInitializeWithVersion: false,   // 根据版本自动配置
+		DSN:                       dg.Dsn, // DSN data source name
+		DefaultStringSize:         191,    // string 类型字段的默认长度
+		DisableDatetimePrecision:  true,   // 禁用 datetime 精度，MySQL 5.6 之前的数据库不支持
+		DontSupportRenameIndex:    true,   // 重命名索引时采用删除并新建的方式，MySQL 5.7 之前的数据库和 MariaDB 不支持重命名索引
+		DontSupportRenameColumn:   true,   // 用 `change` 重命名列，MySQL 8 之前的数据库和 MariaDB 不支持重命名列
+		SkipInitializeWithVersion: false,  // 根据版本自动配置
 	}
 	ormConfig := &gorm.Config{Logger: gormlog.Default.LogMode(gormlog.Silent)}
 	db, err := gorm.Open(mysql.New(mysqlConfig), ormConfig)
@@ -47,19 +49,14 @@ func GormMysql() *gorm.DB {
 		return nil
 	}
 	sqlDB, _ := db.DB()
-	sqlDB.SetMaxIdleConns(m.MaxIdleConns)
-	sqlDB.SetMaxOpenConns(m.MaxOpenConns)
+	sqlDB.SetMaxIdleConns(dg.MaxIdleConns)
+	sqlDB.SetMaxOpenConns(dg.MaxOpenConns)
 	return db
 }
 
-func GormPostgresql() *gorm.DB {
-	m := config.Conf.Postgresql
-	if m == nil || m.Dbname == "" {
-		logger.Log.Panic("未找到数据库配置信息")
-		return nil
-	}
-	logger.Log.Infof("连接postgres [%s]", m.PgDsn())
-	db, err := sql.Open("postgres", m.PgDsn())
+func (dg *DbGorm) GormPostgresql() *gorm.DB {
+
+	db, err := sql.Open("postgres", dg.Dsn)
 	if err != nil {
 		logger.Log.Panicf("连接postgresql失败! [%s]", err.Error())
 	}
@@ -71,9 +68,9 @@ func GormPostgresql() *gorm.DB {
 	}
 	sqlDB, err := gormDb.DB()
 	// SetMaxIdleConns 设置空闲连接池中连接的最大数量
-	sqlDB.SetMaxIdleConns(m.MaxIdleConns)
+	sqlDB.SetMaxIdleConns(dg.MaxIdleConns)
 	// SetMaxOpenConns 设置打开数据库连接的最大数量。
-	sqlDB.SetMaxOpenConns(m.MaxOpenConns)
+	sqlDB.SetMaxOpenConns(dg.MaxOpenConns)
 	// SetConnMaxLifetime 设置了连接可复用的最大时间。
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
