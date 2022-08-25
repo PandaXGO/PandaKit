@@ -276,7 +276,9 @@ func (c *timedcache) Clear() {
 func (c *timedcache) Save(w io.Writer) (err error) {
 	enc := gob.NewEncoder(w)
 	defer func() {
-		if x := recover(); x != nil {
+		var err any
+		err = recover()
+		if err != nil {
 			err = fmt.Errorf("Error registering item types with Gob library")
 		}
 	}()

@@ -13,13 +13,11 @@ import (
 )
 
 type Model struct {
-	Id         int64      `json:"id"`
-	CreateTime *time.Time `json:"createTime"`
-	CreatorId  int64      `json:"creatorId"`
-	Creator    string     `json:"creator"`
-	UpdateTime *time.Time `json:"updateTime"`
-	ModifierId int64      `json:"modifierId"`
-	Modifier   string     `json:"modifier"`
+	BaseAutoModel
+	CreatorId  int64  `json:"creatorId"`
+	Creator    string `json:"creator"` //创建者
+	ModifierId int64  `json:"modifierId"`
+	Modifier   string `json:"modifier"` //修改者
 }
 
 // 设置基础信息. 如创建时间，修改时间，创建者，修改者信息
@@ -27,9 +25,9 @@ func (m *Model) SetBaseInfo(account *LoginAccount) {
 	nowTime := time.Now()
 	isCreate := m.Id == 0
 	if isCreate {
-		m.CreateTime = &nowTime
+		m.CreatedAt = nowTime
 	}
-	m.UpdateTime = &nowTime
+	m.UpdatedAt = nowTime
 
 	if account == nil {
 		return
