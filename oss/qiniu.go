@@ -26,25 +26,10 @@ type qiniuOss struct {
 	config QiniuConfig
 }
 
-func NewQnOss(config QiniuConfig) *qiniuOss {
+func NewQnOss(config QiniuConfig) Driver {
 	return &qiniuOss{
 		config: config,
 	}
-}
-
-func NewDefaultQnOss() *qiniuOss {
-	config := QiniuConfig{
-		AccessKey:     "",
-		SecretKey:     "",
-		Bucket:        "",
-		PolicyExpires: 0,
-		Zone:          nil,
-		UseHTTPS:      false,
-		UseCdnDomains: false,
-		CentralRsHost: "",
-		Domain:        "",
-	}
-	return NewQnOss(config)
 }
 
 func (q *qiniuOss) Put(objectName, localFileName string) error {

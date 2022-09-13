@@ -1,64 +1,48 @@
 package rediscli
 
 import (
+	"context"
 	"fmt"
+	"github.com/go-redis/redis/v8"
 	"time"
-
-	"github.com/go-redis/redis"
 )
 
-var cli *redis.Client
-
-func SetCli(client *redis.Client) {
-	cli = client
+type RedisDB struct {
+	*redis.Client
 }
 
-func GetCli() *redis.Client {
-	return cli
-}
+func NewRedisClient(host, password string, port int) (*RedisDB, error) {
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     fmt.Sprintf("%s:%d", host, port),
+		Password: password,
+		DB:       0,
+	})
 
-// get key value
-func Get(key string) string {
-	val, err := cli.Get(key).Result()
-	switch {
-	case err == redis.Nil:
-		fmt.Println("key does not exist")
-	case err != nil:
-		fmt.Println("Get failed", err)
-	case val == "":
-		fmt.Println("value is empty")
+	if _, err := rdb.Ping(context.Background()).Result(); err != nil {
+		return nil, err
 	}
-	return val
+
+	return &RedisDB{
+		Client: rdb,
+	}, nil
 }
 
-// set key value
-func Set(key string, val string, expiration time.Duration) {
-	cli.Set(key, val, expiration)
+func (rdb *RedisDB) HGet(key, field string, obj interface{}) error {
+	return rdb.Client.HGet(context.Background(), key, field).Scan(obj)
 }
 
-func HSet(key string, field string, val any) {
-	cli.HSet(key, field, val)
+func (rdb *RedisDB) HSet(key, field string, val interface{}) error {
+	return rdb.Client.HSet(context.Background(), key, field, val).Err()
 }
 
-// hget
-func HGet(key string, field string) string {
-	val, _ := cli.HGet(key, field).Result()
-	return val
+func (rdb *RedisDB) HDel(key string, fields ...string) error {
+	return rdb.Client.HDel(context.Background(), key, fields...).Err()
 }
 
-// hget
-func HExist(key string, field string) bool {
-	val, _ := cli.HExists(key, field).Result()
-	return val
+func (rdb *RedisDB) Get(key string, obj interface{}) error {
+	return rdb.Client.Get(context.Background(), key).Scan(obj)
 }
 
-// hgetall
-func HGetAll(key string) map[string]string {
-	vals, _ := cli.HGetAll(key).Result()
-	return vals
-}
-
-// hdel
-func HDel(key string, fields ...string) int {
-	return int(cli.HDel(key, fields...).Val())
+func (rdb *RedisDB) Set(key string, val interface{}, expir time.Duration) error {
+	return rdb.Client.Set(context.Background(), key, val, expir).Err()
 }

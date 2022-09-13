@@ -4,6 +4,7 @@ import "io"
 
 // Driver oss驱动接口定义
 type Driver interface {
+
 	//上传
 	Put(objectName, localFileName string) error
 
