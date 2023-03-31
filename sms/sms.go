@@ -9,6 +9,6 @@ func NewDefaultSms(use string) Sms {
 	case "AliYun":
 		return NewAliSms(AliConfig{})
 	default:
-		panic("sms driver err")
+		panic(any("sms driver err"))
 	}
 }

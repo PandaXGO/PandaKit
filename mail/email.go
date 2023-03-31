@@ -30,7 +30,7 @@ func (m Mail) Email(to, subject string, body string) error {
 
 func (m Mail) ErrorToEmail(to, subject string, body string) error {
 	tos := strings.Split(to, ",")
-	if tos[len(to)-1] == "" { // 判断切片的最后一个元素是否为空,为空则移除
+	if tos[len(tos)-1] == "" { // 判断切片的最后一个元素是否为空,为空则移除
 		tos = tos[:len(tos)-1]
 	}
 	return m.send(tos, subject, body)
