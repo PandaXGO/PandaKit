@@ -76,9 +76,26 @@ func (r *RequestWrapper) Get() *ResponseWrapper {
 	return request(r)
 }
 
+func (r *RequestWrapper) Delete() *ResponseWrapper {
+	r.method = "DELETE"
+	r.body = nil
+	return request(r)
+}
+
 func (r *RequestWrapper) PostJson(body string) *ResponseWrapper {
 	buf := bytes.NewBufferString(body)
 	r.method = "POST"
+	r.body = buf
+	if r.header == nil {
+		r.header = make(map[string]string)
+	}
+	r.header["Content-type"] = "application/json"
+	return request(r)
+}
+
+func (r *RequestWrapper) PutJson(body string) *ResponseWrapper {
+	buf := bytes.NewBufferString(body)
+	r.method = "PUT"
 	r.body = buf
 	if r.header == nil {
 		r.header = make(map[string]string)
