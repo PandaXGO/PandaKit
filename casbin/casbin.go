@@ -12,11 +12,11 @@ type CasbinS struct {
 	ModelPath string
 }
 
-func (c *CasbinS) UpdateCasbin(tenantId string, roleKey string, casbinInfos []CasbinRule) error {
-	c.ClearCasbin(0, tenantId, roleKey)
+func (c *CasbinS) UpdateCasbin(roleKey string, casbinInfos []CasbinRule) error {
+	c.ClearCasbin(0, roleKey)
 	rules := [][]string{}
 	for _, v := range casbinInfos {
-		rules = append(rules, []string{tenantId, roleKey, v.Path, v.Method})
+		rules = append(rules, []string{roleKey, v.Path, v.Method})
 	}
 	e := c.Casbin()
 	success, _ := e.AddPolicies(rules)
@@ -25,20 +25,20 @@ func (c *CasbinS) UpdateCasbin(tenantId string, roleKey string, casbinInfos []Ca
 }
 
 func (c *CasbinS) UpdateCasbinApi(oldPath string, newPath string, oldMethod string, newMethod string) {
-	err := starter.Db.Table("casbin_rule").Model(&CasbinRule{}).Where("v2 = ? AND v3 = ?", oldPath, oldMethod).Updates(map[string]any{
-		"v2": newPath,
-		"v3": newMethod,
+	err := starter.Db.Table("casbin_rule").Model(&CasbinRule{}).Where("v1 = ? AND v2 = ?", oldPath, oldMethod).Updates(map[string]any{
+		"v1": newPath,
+		"v2": newMethod,
 	}).Error
 	biz.ErrIsNil(err, "修改api失败")
 }
 
-func (c *CasbinS) GetPolicyPathByRoleId(tenantId, roleKey string) (pathMaps []CasbinRule) {
+func (c *CasbinS) GetPolicyPathByRoleId(roleKey string) (pathMaps []CasbinRule) {
 	e := c.Casbin()
-	list := e.GetFilteredPolicy(0, tenantId, roleKey)
+	list := e.GetFilteredPolicy(0, roleKey)
 	for _, v := range list {
 		pathMaps = append(pathMaps, CasbinRule{
-			Path:   v[2],
-			Method: v[3],
+			Path:   v[1],
+			Method: v[2],
 		})
 	}
 	return pathMaps
