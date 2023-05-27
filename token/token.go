@@ -10,6 +10,7 @@ import (
 
 type Claims struct {
 	UserId   int64
+	TenantId int64
 	UserName string
 	RoleId   int64
 	RoleKey  string
