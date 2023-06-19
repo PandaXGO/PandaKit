@@ -93,6 +93,17 @@ func (r *RequestWrapper) PostJson(body string) *ResponseWrapper {
 	return request(r)
 }
 
+func (r *RequestWrapper) PostText(body string) *ResponseWrapper {
+	buf := bytes.NewBufferString(body)
+	r.method = "POST"
+	r.body = buf
+	if r.header == nil {
+		r.header = make(map[string]string)
+	}
+	r.header["Content-Type"] = "text/plain"
+	return request(r)
+}
+
 func (r *RequestWrapper) PutJson(body string) *ResponseWrapper {
 	buf := bytes.NewBufferString(body)
 	r.method = "PUT"
