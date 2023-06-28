@@ -10,8 +10,17 @@ import (
 	"strconv"
 )
 
+// 绑定并校验请求结构体参数  结构体添加 例如： validate:"required" validate:"required,gt=10"
+func BindJsonAndValid(rc *ReqCtx, data any) {
+	if err := rc.Request.ReadEntity(data); err != nil {
+		panic(any(biz.NewBizErr(err.Error())))
+	}
+	if err := rc.Validate.Struct(data); err != nil {
+		panic(any(biz.NewBizErr("传参格式错误：" + err.Error())))
+	}
+}
+
 // BindQuery 绑定查询字符串到
-// 绑定并校验请求结构体参数  结构体添加 例如： binding:"required" 或binding:"required,gt=10"
 func BindQuery(rc *ReqCtx, data any) {
 	if err := rc.Request.ReadEntity(data); err != nil {
 		panic(any(biz.NewBizErr(err.Error())))

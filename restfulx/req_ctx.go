@@ -4,6 +4,7 @@ import (
 	"github.com/XM-GO/PandaKit/biz"
 	"github.com/XM-GO/PandaKit/token"
 	"github.com/emicklei/go-restful/v3"
+	"github.com/go-playground/validator/v10"
 	"time"
 )
 
@@ -21,9 +22,9 @@ type ReqCtx struct {
 	ReqParam any      // 请求参数，主要用于记录日志
 	ResData  any      // 响应结果
 	Err      any      // 请求错误
-
-	Timed int64 // 执行时间
-	noRes bool  // 无需返回结果，即文件下载等
+	Validate *validator.Validate
+	Timed    int64 // 执行时间
+	noRes    bool  // 无需返回结果，即文件下载等
 }
 
 func (rc *ReqCtx) Handle(handler HandlerFunc) {
@@ -69,6 +70,7 @@ func NewReqCtx(request *restful.Request, response *restful.Response) *ReqCtx {
 		Request:            request,
 		Response:           response,
 		LogInfo:            NewLogInfo("默认日志信息"),
+		Validate:           validator.New(),
 		RequiredPermission: &Permission{NeedToken: true, NeedCasbin: true},
 	}
 }
