@@ -43,6 +43,10 @@ func (rdb *RedisDB) Get(key string, obj interface{}) error {
 	return rdb.Client.Get(context.Background(), key).Scan(obj)
 }
 
+func (rdb *RedisDB) GetResult(key string) (string, error) {
+	return rdb.Client.Get(context.Background(), key).Result()
+}
+
 func (rdb *RedisDB) Set(key string, val interface{}, expir time.Duration) error {
 	return rdb.Client.Set(context.Background(), key, val, expir).Err()
 }

@@ -1,8 +1,8 @@
 package ginx
 
 import (
-	"github.com/XM-GO/PandaKit/biz"
-	"github.com/XM-GO/PandaKit/token"
+	"github.com/PandaXGO/PandaKit/biz"
+	"github.com/PandaXGO/PandaKit/token"
 	"time"
 
 	"github.com/gin-gonic/gin"

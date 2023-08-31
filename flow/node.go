@@ -1,7 +1,7 @@
 package flow
 
 import (
-	"github.com/XM-GO/PandaKit/utils"
+	"github.com/PandaXGO/PandaKit/utils"
 )
 
 type Properties map[string]any

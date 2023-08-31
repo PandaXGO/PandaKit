@@ -1,4 +1,4 @@
-module github.com/XM-GO/PandaKit
+module github.com/PandaXGO/PandaKit
 
 go 1.18
 

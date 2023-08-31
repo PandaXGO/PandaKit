@@ -2,7 +2,7 @@ package oss
 
 import (
 	"context"
-	utilFile "github.com/XM-GO/PandaKit/file"
+	utilFile "github.com/PandaXGO/PandaKit/file"
 	"io"
 
 	"github.com/pkg/errors"

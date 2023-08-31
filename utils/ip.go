@@ -2,7 +2,7 @@ package utils
 
 import (
 	"fmt"
-	"github.com/XM-GO/PandaKit/httpclient"
+	"github.com/PandaXGO/PandaKit/httpclient"
 	"net"
 )
 

@@ -2,7 +2,7 @@ package oauth
 
 import (
 	"fmt"
-	"github.com/XM-GO/PandaKit/model"
+	"github.com/PandaXGO/PandaKit/model"
 	"net"
 	"net/http"
 	"time"

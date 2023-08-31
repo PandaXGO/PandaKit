@@ -2,7 +2,7 @@ package ws
 
 import (
 	"encoding/json"
-	"github.com/XM-GO/PandaKit/logger"
+	"github.com/PandaXGO/PandaKit/logger"
 	"net/http"
 	"time"
 

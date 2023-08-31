@@ -1,8 +1,8 @@
 package restfulx
 
 import (
-	"github.com/XM-GO/PandaKit/biz"
-	"github.com/XM-GO/PandaKit/token"
+	"github.com/PandaXGO/PandaKit/biz"
+	"github.com/PandaXGO/PandaKit/token"
 	"github.com/emicklei/go-restful/v3"
 	"github.com/go-playground/validator/v10"
 	"time"

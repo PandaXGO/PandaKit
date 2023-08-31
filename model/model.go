@@ -2,8 +2,8 @@ package model
 
 import (
 	"fmt"
-	"github.com/XM-GO/PandaKit/biz"
-	"github.com/XM-GO/PandaKit/starter"
+	"github.com/PandaXGO/PandaKit/biz"
+	"github.com/PandaXGO/PandaKit/starter"
 	"strconv"
 
 	"strings"

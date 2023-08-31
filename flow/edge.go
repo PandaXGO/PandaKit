@@ -1,6 +1,6 @@
 package flow
 
-import "github.com/XM-GO/PandaKit/utils"
+import "github.com/PandaXGO/PandaKit/utils"
 
 type Edge struct {
 	Id           string     `json:"id"`

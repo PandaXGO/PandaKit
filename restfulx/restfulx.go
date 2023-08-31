@@ -2,9 +2,9 @@ package restfulx
 
 import (
 	"encoding/json"
-	"github.com/XM-GO/PandaKit/biz"
-	"github.com/XM-GO/PandaKit/logger"
-	"github.com/XM-GO/PandaKit/model"
+	"github.com/PandaXGO/PandaKit/biz"
+	"github.com/PandaXGO/PandaKit/logger"
+	"github.com/PandaXGO/PandaKit/model"
 	"github.com/emicklei/go-restful/v3"
 	"net/http"
 	"strconv"

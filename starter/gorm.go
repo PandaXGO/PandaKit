@@ -2,7 +2,7 @@ package starter
 
 import (
 	"database/sql"
-	"github.com/XM-GO/PandaKit/logger"
+	"github.com/PandaXGO/PandaKit/logger"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

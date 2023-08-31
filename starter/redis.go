@@ -2,7 +2,7 @@ package starter
 
 import (
 	"fmt"
-	"github.com/XM-GO/PandaKit/logger"
+	"github.com/PandaXGO/PandaKit/logger"
 	"github.com/go-redis/redis"
 )
 
