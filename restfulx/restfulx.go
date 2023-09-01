@@ -6,6 +6,7 @@ import (
 	"github.com/PandaXGO/PandaKit/logger"
 	"github.com/PandaXGO/PandaKit/model"
 	"github.com/emicklei/go-restful/v3"
+	"github.com/gorilla/schema"
 	"net/http"
 	"strconv"
 )
@@ -27,6 +28,7 @@ func BindQuery(rc *ReqCtx, data any) {
 	}
 }
 
+//PathParamsToAny 获取虽有路径中的参数
 func PathParamsToAny(rc *ReqCtx, in any) {
 	vars := make(map[string]any)
 	for k, v := range rc.Request.PathParameters() {
@@ -34,6 +36,16 @@ func PathParamsToAny(rc *ReqCtx, in any) {
 	}
 	marshal, _ := json.Marshal(vars)
 	err := json.Unmarshal(marshal, in)
+	biz.ErrIsNil(err, "error get path value encoding unmarshal")
+	return
+}
+
+//QueryParamsToAny 获取所有Query的参数
+func QueryParamsToAny(rc *ReqCtx, in any) {
+	err := rc.Request.Request.ParseForm()
+	biz.ErrIsNil(err, "error get ParseForm value encoding unmarshal")
+	decoder := schema.NewDecoder()
+	err = decoder.Decode(in, rc.Request.Request.Form)
 	biz.ErrIsNil(err, "error get path value encoding unmarshal")
 	return
 }
