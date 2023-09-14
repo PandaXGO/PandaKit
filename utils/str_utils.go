@@ -129,3 +129,28 @@ func DeptPCIds(deptIds []string, id int64, isP bool) []int64 {
 		return cRes
 	}
 }
+
+// 获取组织
+// isP 是父ID 否则子ID
+func OrganizationPCIds(orgIds []string, id int64, isP bool) []int64 {
+	pRes := make([]int64, 0)
+	cRes := make([]int64, 0)
+	is := true
+	for _, orgId := range orgIds {
+		did := kgo.KConv.Str2Int64(orgId)
+		if is {
+			pRes = append(pRes, did)
+		}
+		if kgo.KConv.Str2Int64(orgId) == id {
+			is = false
+		}
+		if !is {
+			cRes = append(cRes, did)
+		}
+	}
+	if isP {
+		return pRes
+	} else {
+		return cRes
+	}
+}

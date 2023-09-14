@@ -9,13 +9,14 @@ import (
 )
 
 type Claims struct {
-	UserId   int64
-	TenantId int64
-	UserName string
-	RoleId   int64
-	RoleKey  string
-	DeptId   int64
-	PostId   int64
+	UserId         int64
+	TenantId       int64
+	OrganizationId int64 //组织Id
+	UserName       string
+	RoleId         int64
+	RoleKey        string
+	DeptId         int64
+	PostId         int64
 	jwt.StandardClaims
 }
 
