@@ -11,11 +11,11 @@ type RedisDB struct {
 	*redis.Client
 }
 
-func NewRedisClient(host, password string, port int) (*RedisDB, error) {
+func NewRedisClient(host, password string, port, db int) (*RedisDB, error) {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%d", host, port),
 		Password: password,
-		DB:       0,
+		DB:       db,
 	})
 
 	if _, err := rdb.Ping(context.Background()).Result(); err != nil {
