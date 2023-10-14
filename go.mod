@@ -28,7 +28,7 @@ require (
 	github.com/mojocn/base64Captcha v1.3.5
 	github.com/pkg/errors v0.9.1
 	github.com/qiniu/go-sdk/v7 v7.11.0
-	github.com/sirupsen/logrus v1.9.0
+	github.com/sirupsen/logrus v1.9.3
 	github.com/xuri/excelize/v2 v2.4.1
 	golang.org/x/sys v0.0.0-20220722155257-8c9f86f7a55f // indirect
 	golang.org/x/time v0.0.0-20211116232009-f0f3c7e86c11 // indirect
@@ -41,6 +41,7 @@ require (
 	github.com/emicklei/go-restful/v3 v3.9.0
 	github.com/go-playground/validator/v10 v10.8.0
 	github.com/go-redis/redis/v8 v8.11.5
+	github.com/gorilla/schema v1.2.0
 	github.com/minio/minio-go/v7 v7.0.36
 	golang.org/x/oauth2 v0.0.0-20220822191816-0ebed06d0094
 )
@@ -61,7 +62,6 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/golang-sql/civil v0.0.0-20190719163853-cb61b32ac6fe // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
-	github.com/gorilla/schema v1.2.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.10.1 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
