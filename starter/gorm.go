@@ -60,9 +60,10 @@ func (dg *DbGorm) GormPostgresql() *gorm.DB {
 	if err != nil {
 		logger.Log.Panicf("连接postgresql失败! [%s]", err.Error())
 	}
+	ormConfig := &gorm.Config{Logger: gormlog.Default.LogMode(gormlog.Silent)}
 	gormDb, err := gorm.Open(postgres.New(postgres.Config{
 		Conn: db,
-	}), &gorm.Config{})
+	}), ormConfig)
 	if err != nil {
 		logger.Log.Panicf("连接postgresql失败! [%s]", err.Error())
 	}
