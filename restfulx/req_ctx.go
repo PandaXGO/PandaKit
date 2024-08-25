@@ -1,8 +1,8 @@
 package restfulx
 
 import (
-	"pandax/kit/biz"
-	"pandax/kit/token"
+	"github.com/PandaXGO/PandaKit/biz"
+	"github.com/PandaXGO/PandaKit/token"
 	"time"
 
 	"github.com/emicklei/go-restful/v3"

@@ -1,11 +1,11 @@
 package utilFile
 
 import (
+	"github.com/PandaXGO/PandaKit/biz"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
-	"pandax/kit/biz"
 	"path/filepath"
 	"strconv"
 	"sync"

@@ -1,7 +1,7 @@
 package captcha
 
 import (
-	"pandax/kit/biz"
+	"github.com/PandaXGO/PandaKit/biz"
 
 	"github.com/mojocn/base64Captcha"
 )

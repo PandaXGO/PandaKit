@@ -2,7 +2,7 @@ package biz
 
 import (
 	"fmt"
-	"pandax/kit/utils"
+	"github.com/PandaXGO/PandaKit/utils"
 	"reflect"
 )
 

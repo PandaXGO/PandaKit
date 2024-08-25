@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"pandax/kit/logger"
+	"github.com/PandaXGO/PandaKit/logger"
 
 	"github.com/gorilla/websocket"
 )

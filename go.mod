@@ -1,6 +1,6 @@
 module github.com/PandaXGO/PandaKit
 
-go 1.18
+go 1.19
 
 require (
 	github.com/gin-gonic/gin v1.7.4
@@ -44,6 +44,7 @@ require (
 	github.com/gorilla/schema v1.2.0
 	github.com/minio/minio-go/v7 v7.0.36
 	golang.org/x/oauth2 v0.0.0-20220822191816-0ebed06d0094
+	golang.org/x/text v0.3.7
 )
 
 require (
@@ -90,7 +91,6 @@ require (
 	golang.org/x/image v0.0.0-20210220032944-ac19c3e999fb // indirect
 	golang.org/x/net v0.0.0-20220722155237-a158d28d115b // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	gopkg.in/ini.v1 v1.66.6 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

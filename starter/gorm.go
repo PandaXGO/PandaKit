@@ -2,7 +2,7 @@ package starter
 
 import (
 	"database/sql"
-	"pandax/kit/logger"
+	"github.com/PandaXGO/PandaKit/logger"
 	"time"
 
 	"gorm.io/driver/mysql"

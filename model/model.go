@@ -2,8 +2,8 @@ package model
 
 import (
 	"fmt"
-	"pandax/kit/biz"
-	"pandax/kit/starter"
+	"github.com/PandaXGO/PandaKit/biz"
+	"github.com/PandaXGO/PandaKit/starter"
 	"strconv"
 
 	"strings"
