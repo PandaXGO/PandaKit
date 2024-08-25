@@ -8,9 +8,6 @@ import (
 
 func ErrIsNil(err error, msg string, params ...any) {
 	if err != nil {
-		if err.Error() == "record not found" {
-			return
-		}
 		panic(NewBizErr(fmt.Sprintf(msg, params...)))
 	}
 }
