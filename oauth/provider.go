@@ -2,9 +2,9 @@ package oauth
 
 import (
 	"fmt"
-	"github.com/PandaXGO/PandaKit/model"
 	"net"
 	"net/http"
+	"pandax/kit/model"
 	"time"
 
 	"golang.org/x/oauth2"

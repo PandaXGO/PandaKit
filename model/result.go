@@ -3,7 +3,7 @@ package model
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/PandaXGO/PandaKit/biz"
+	"pandax/kit/biz"
 )
 
 const (

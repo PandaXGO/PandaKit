@@ -2,33 +2,34 @@ package restfulx
 
 import (
 	"encoding/json"
-	"github.com/PandaXGO/PandaKit/biz"
-	"github.com/PandaXGO/PandaKit/logger"
-	"github.com/PandaXGO/PandaKit/model"
+	"net/http"
+	"pandax/kit/biz"
+	"pandax/kit/logger"
+	"pandax/kit/model"
+	"strconv"
+
 	"github.com/emicklei/go-restful/v3"
 	"github.com/gorilla/schema"
-	"net/http"
-	"strconv"
 )
 
 // 绑定并校验请求结构体参数  结构体添加 例如： validate:"required" validate:"required,gt=10"
 func BindJsonAndValid(rc *ReqCtx, data any) {
 	if err := rc.Request.ReadEntity(data); err != nil {
-		panic(any(biz.NewBizErr(err.Error())))
+		panic(any(biz.CodeInvalidParameter))
 	}
 	if err := rc.Validate.Struct(data); err != nil {
-		panic(any(biz.NewBizErr("传参格式错误：" + err.Error())))
+		panic(any(biz.CodeInvalidParameter))
 	}
 }
 
 // BindQuery 绑定查询字符串到
 func BindQuery(rc *ReqCtx, data any) {
 	if err := rc.Request.ReadEntity(data); err != nil {
-		panic(any(biz.NewBizErr(err.Error())))
+		panic(any(biz.CodeInvalidParameter))
 	}
 }
 
-//PathParamsToAny 获取虽有路径中的参数
+// PathParamsToAny 获取虽有路径中的参数
 func PathParamsToAny(rc *ReqCtx, in any) {
 	vars := make(map[string]any)
 	for k, v := range rc.Request.PathParameters() {
@@ -40,7 +41,7 @@ func PathParamsToAny(rc *ReqCtx, in any) {
 	return
 }
 
-//QueryParamsToAny 获取所有Query的参数
+// QueryParamsToAny 获取所有Query的参数
 func QueryParamsToAny(rc *ReqCtx, in any) {
 	err := rc.Request.Request.ParseForm()
 	biz.ErrIsNil(err, "error get ParseForm value encoding unmarshal")
@@ -83,7 +84,6 @@ func PathParam(rc *ReqCtx, pm string) string {
 // 文件下载
 func Download(rc *ReqCtx, filename string) {
 	rc.Response.Header().Add("success", "true")
-	rc.Response.Header().Set("Content-Length", "-1")
 	rc.Response.Header().Set("Content-Disposition", "attachment; filename="+filename)
 	http.ServeFile(
 		rc.Response.ResponseWriter,

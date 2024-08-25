@@ -3,9 +3,10 @@ package token
 import (
 	"errors"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"strings"
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
 )
 
 type Claims struct {
@@ -27,10 +28,11 @@ type JWT struct {
 }
 
 var (
-	TokenExpired     = errors.New("token is expired")
-	TokenNotValidYet = errors.New("token not active yet")
-	TokenMalformed   = errors.New("that's not even a token")
-	TokenInvalid     = errors.New("couldn't handle this token")
+	TokenExpired          = errors.New("token is expired")
+	TokenNotValidYet      = errors.New("token not active yet")
+	TokenMalformed        = errors.New("that's not even a token")
+	TokenInvalid          = errors.New("couldn't handle this token")
+	UnsupportedSignMethod = errors.New("unsupported sign method")
 )
 
 func NewJWT(kid string, key []byte, method jwt.SigningMethod) *JWT {
@@ -44,23 +46,9 @@ func NewJWT(kid string, key []byte, method jwt.SigningMethod) *JWT {
 // CreateToken 创建一个token
 func (j *JWT) CreateToken(claims Claims) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &claims)
-	var key interface{}
-	if j.isEs() {
-		v, err := jwt.ParseECPrivateKeyFromPEM(j.SignedKey)
-		if err != nil {
-			return "", err
-		}
-		key = v
-	} else if j.isRsOrPS() {
-		v, err := jwt.ParseRSAPrivateKeyFromPEM(j.SignedKey)
-		if err != nil {
-			return "", err
-		}
-		key = v
-	} else if j.isHs() {
-		key = j.SignedKey
-	} else {
-		return "", errors.New("unsupported sign method")
+	key, err := j.getKey()
+	if err != nil {
+		return "", err
 	}
 	return token.SignedString(key)
 }
@@ -71,7 +59,11 @@ func (j *JWT) ParseToken(tokenString string) (*Claims, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("parse error")
 		}
-		return j.SignedKey, nil
+		key, err := j.getKey()
+		if err != nil {
+			return nil, err
+		}
+		return key, nil
 	})
 	if err != nil {
 		if ve, ok := err.(*jwt.ValidationError); ok {
@@ -106,7 +98,11 @@ func (j *JWT) RefreshToken(tokenString string) (string, error) {
 		return time.Unix(0, 0)
 	}
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-		return j.SignedKey, nil
+		key, err := j.getKey()
+		if err != nil {
+			return nil, err
+		}
+		return key, nil
 	})
 	if err != nil {
 		return "", err
@@ -118,6 +114,26 @@ func (j *JWT) RefreshToken(tokenString string) (string, error) {
 		return j.CreateToken(*claims)
 	}
 	return "", TokenInvalid
+}
+
+func (j *JWT) getKey() (interface{}, error) {
+	if j.isEs() {
+		v, err := jwt.ParseECPrivateKeyFromPEM(j.SignedKey)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	} else if j.isRsOrPS() {
+		v, err := jwt.ParseRSAPrivateKeyFromPEM(j.SignedKey)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	} else if j.isHs() {
+		return j.SignedKey, nil
+	} else {
+		return nil, UnsupportedSignMethod
+	}
 }
 
 func (a *JWT) isEs() bool {

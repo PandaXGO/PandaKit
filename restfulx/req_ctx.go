@@ -1,11 +1,12 @@
 package restfulx
 
 import (
-	"github.com/PandaXGO/PandaKit/biz"
-	"github.com/PandaXGO/PandaKit/token"
+	"pandax/kit/biz"
+	"pandax/kit/token"
+	"time"
+
 	"github.com/emicklei/go-restful/v3"
 	"github.com/go-playground/validator/v10"
-	"time"
 )
 
 // 处理函数
@@ -24,7 +25,7 @@ type ReqCtx struct {
 	Err      any      // 请求错误
 	Validate *validator.Validate
 	Timed    int64 // 执行时间
-	noRes    bool  // 无需返回结果，即文件下载等
+	NoRes    bool  // 无需返回结果，即文件下载等
 }
 
 func (rc *ReqCtx) Handle(handler HandlerFunc) {
@@ -37,7 +38,7 @@ func (rc *ReqCtx) Handle(handler HandlerFunc) {
 			ErrorRes(request, err)
 		}
 		// 应用所有请求后置处理器
-		ApplyHandlerInterceptor(afterHandlers, rc)
+		go ApplyHandlerInterceptor(afterHandlers, rc)
 	}()
 	biz.IsTrue(rc.Request != nil, "Request == nil")
 
@@ -55,13 +56,13 @@ func (rc *ReqCtx) Handle(handler HandlerFunc) {
 	begin := time.Now()
 	handler(rc)
 	rc.Timed = time.Now().Sub(begin).Milliseconds()
-	if !rc.noRes {
+	if !rc.NoRes {
 		SuccessRes(rc.Response, rc.ResData)
 	}
 }
 
 func (rc *ReqCtx) Download(filename string) {
-	rc.noRes = true
+	rc.NoRes = true
 	Download(rc, filename)
 }
 
@@ -78,6 +79,11 @@ func NewReqCtx(request *restful.Request, response *restful.Response) *ReqCtx {
 // 调用该方法设置请求描述，则默认记录日志，并不记录响应结果
 func (r *ReqCtx) WithLog(model string) *ReqCtx {
 	r.LogInfo.Description = model
+	return r
+}
+
+func (r *ReqCtx) NoAppend() *ReqCtx {
+	r.NoRes = true
 	return r
 }
 

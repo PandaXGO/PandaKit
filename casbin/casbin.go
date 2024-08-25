@@ -1,54 +1,63 @@
 package casbin
 
 import (
-	"github.com/PandaXGO/PandaKit/biz"
-	"github.com/PandaXGO/PandaKit/starter"
+	"pandax/kit/biz"
+	"pandax/kit/starter"
+	"sync"
+
 	"github.com/casbin/casbin/v2"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
-	"sync"
 )
 
-type CasbinS struct {
+type CasbinService struct {
 	ModelPath string
 }
 
-func (c *CasbinS) UpdateCasbin(roleKey string, casbinInfos []CasbinRule) error {
+func (c *CasbinService) UpdateCasbin(roleKey string, casbinInfos []CasbinRule) error {
 	c.ClearCasbin(0, roleKey)
 	rules := [][]string{}
 	for _, v := range casbinInfos {
 		rules = append(rules, []string{roleKey, v.Path, v.Method})
 	}
-	e := c.Casbin()
-	success, _ := e.AddPolicies(rules)
-	biz.IsTrue(success, "存在相同api,添加失败,请联系管理员")
+	e := c.GetCasbinEnforcer()
+	success, err := e.AddPolicies(rules)
+	if err != nil {
+		return err
+	}
+	if !success {
+		return biz.NewBizErr("存在相同api,添加失败,请联系管理员")
+	}
 	return nil
 }
 
-func (c *CasbinS) UpdateCasbinApi(oldPath string, newPath string, oldMethod string, newMethod string) {
-	err := starter.Db.Table("casbin_rule").Model(&CasbinRule{}).Where("v1 = ? AND v2 = ?", oldPath, oldMethod).Updates(map[string]any{
+func (c *CasbinService) UpdateCasbinApi(oldPath string, newPath string, oldMethod string, newMethod string) error {
+	err := starter.Db.Table("casbin_rule").Model(&CasbinRule{}).Where("v1 = ? AND v2 = ?", oldPath, oldMethod).Updates(map[string]interface{}{
 		"v1": newPath,
 		"v2": newMethod,
 	}).Error
-	biz.ErrIsNil(err, "修改api失败")
+	if err != nil {
+		return biz.NewBizErr("修改api失败")
+	}
+	return nil
 }
 
-func (c *CasbinS) GetPolicyPathByRoleId(roleKey string) (pathMaps []CasbinRule) {
-	e := c.Casbin()
+func (c *CasbinService) GetPolicyPathByRoleId(roleKey string) []CasbinRule {
+	e := c.GetCasbinEnforcer()
 	list := e.GetFilteredPolicy(0, roleKey)
-	for _, v := range list {
-		pathMaps = append(pathMaps, CasbinRule{
+	pathMaps := make([]CasbinRule, len(list))
+	for i, v := range list {
+		pathMaps[i] = CasbinRule{
 			Path:   v[1],
 			Method: v[2],
-		})
+		}
 	}
 	return pathMaps
 }
 
-func (c *CasbinS) ClearCasbin(v int, p ...string) bool {
-	e := c.Casbin()
+func (c *CasbinService) ClearCasbin(v int, p ...string) bool {
+	e := c.GetCasbinEnforcer()
 	success, _ := e.RemoveFilteredPolicy(v, p...)
 	return success
-
 }
 
 var (
@@ -56,12 +65,16 @@ var (
 	once           sync.Once
 )
 
-func (c *CasbinS) Casbin() *casbin.SyncedEnforcer {
+func (c *CasbinService) GetCasbinEnforcer() *casbin.SyncedEnforcer {
 	once.Do(func() {
 		a, err := gormadapter.NewAdapterByDB(starter.Db)
-		biz.ErrIsNil(err, "新建权限适配器失败")
+		if err != nil {
+			panic(biz.NewBizErr("新建权限适配器失败"))
+		}
 		syncedEnforcer, err = casbin.NewSyncedEnforcer(c.ModelPath, a)
-		biz.ErrIsNil(err, "新建权限适配器失败")
+		if err != nil {
+			panic(biz.NewBizErr("新建权限适配器失败"))
+		}
 	})
 	_ = syncedEnforcer.LoadPolicy()
 	return syncedEnforcer

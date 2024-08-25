@@ -8,7 +8,7 @@ type PageParam struct {
 }
 
 type ResultPage struct {
-	Total    int64 `json:"total"`
+	Total    any   `json:"total"`
 	PageNum  int64 `json:"pageNum"`
 	PageSize int64 `json:"pageSize"`
 	Data     any   `json:"data"`

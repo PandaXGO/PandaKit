@@ -1,2 +1,2 @@
 # kit
-PandaX 工具库
+PandaX 开发框架

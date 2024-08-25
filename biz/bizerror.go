@@ -7,11 +7,15 @@ type BizError struct {
 }
 
 var (
-	Success       *BizError = NewBizErrCode(200, "success")
-	BizErr        *BizError = NewBizErrCode(400, "biz error")
-	ServerError   *BizError = NewBizErrCode(500, "服务器异常，请联系管理员")
-	PermissionErr *BizError = NewBizErrCode(4001, "没有权限操作，可能是TOKEN过期了，请先登录")
-	CasbinErr     *BizError = NewBizErrCode(403, "没有API接口访问权限，请联系管理员")
+	Success              *BizError = NewBizErrCode(200, "success")
+	BizErr               *BizError = NewBizErrCode(400, "biz error")
+	ServerError          *BizError = NewBizErrCode(500, "服务器异常，请联系管理员")
+	PermissionErr        *BizError = NewBizErrCode(4001, "没有权限操作，可能是TOKEN过期了，请先登录")
+	CasbinErr            *BizError = NewBizErrCode(403, "没有API接口访问权限，请联系管理员")
+	CodeValidationFailed *BizError = NewBizErrCode(501, "验证失败")
+	CodeInvalidParameter *BizError = NewBizErrCode(502, "传递无效参数")
+	CodeInvalidOperation *BizError = NewBizErrCode(503, "无效操作")
+	CodeNotFoundErr      *BizError = NewBizErrCode(604, "未发现")
 )
 
 // 错误消息

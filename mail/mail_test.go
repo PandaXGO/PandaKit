@@ -2,22 +2,17 @@ package email
 
 import "testing"
 
-/**
- * @Description 添加qq群467890197 交流学习
- * @Author 熊猫
- * @Date 2022/1/17 10:35
- **/
-
+// 自行替换测试账户信息
 func TestMail_Email(t *testing.T) {
 	ma := Mail{
 		Host:     "smtp.163.com",
 		Port:     25,
-		From:     "18610165312@163.com",
-		Nickname: "panda",
-		Secret:   "DCXZCAGTCMSEGPZL",
+		From:     "x@163.com",
+		Nickname: "x",
+		Secret:   "x",
 		IsSSL:    false,
 	}
 
-	email := ma.Email("18353366911@163.com", "ceshi", "ceshibody")
+	email := ma.Email("xx@163.com", "ceshi", "ceshibody")
 	t.Log(email)
 }

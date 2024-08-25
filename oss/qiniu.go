@@ -2,8 +2,8 @@ package oss
 
 import (
 	"context"
-	utilFile "github.com/PandaXGO/PandaKit/file"
 	"io"
+	utilFile "pandax/kit/file"
 
 	"github.com/pkg/errors"
 	"github.com/qiniu/go-sdk/v7/auth/qbox"
@@ -91,7 +91,7 @@ func (q *qiniuOss) PutObj(objectName string, file io.Reader) error {
 
 func (q *qiniuOss) Get(objectName, downloadedFileName string) error {
 	publicAccessURL := storage.MakePublicURL(q.config.Domain, objectName)
-	err := utilFile.DownloadFile(publicAccessURL, downloadedFileName)
+	err := utilFile.DownloadFileWithConcurrency(publicAccessURL, downloadedFileName)
 	if err != nil {
 		return errors.Wrapf(err, "qiniu oss get file fail")
 	}
