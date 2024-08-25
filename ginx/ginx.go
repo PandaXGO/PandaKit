@@ -3,7 +3,6 @@ package ginx
 import (
 	"encoding/json"
 	"github.com/PandaXGO/PandaKit/biz"
-	"github.com/PandaXGO/PandaKit/logger"
 	"github.com/PandaXGO/PandaKit/model"
 	"net/http"
 	"strconv"
@@ -82,15 +81,12 @@ func ErrorRes(g *gin.Context, err any) {
 		break
 	case error:
 		g.JSON(http.StatusOK, model.ServerError())
-		logger.Log.Error(t)
 		// panic(err)
 		break
 	case string:
 		g.JSON(http.StatusOK, model.ServerError())
-		logger.Log.Error(t)
 		// panic(err)
 		break
 	default:
-		logger.Log.Error(t)
 	}
 }

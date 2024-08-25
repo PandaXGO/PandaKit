@@ -6,8 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/PandaXGO/PandaKit/logger"
-
 	"github.com/gorilla/websocket"
 )
 
@@ -52,7 +50,6 @@ func checkConn() {
 			err := conn.conn.WriteControl(websocket.PingMessage, []byte("ping"), time.Now().Add(heartbeat/2))
 			conn.lock.Unlock()
 			if err != nil {
-				logger.Log.Info("删除ping失败的websocket连接：uid = ", uid)
 				Delete(uid)
 			}
 		}
@@ -75,7 +72,7 @@ func Delete(userid uint64) {
 }
 
 // 对指定用户发送消息
-func SendMsg(userId uint64, msg *Msg) {
+func SendMsg(userId uint64, msg *Msg) error {
 	connLock.Lock()
 	defer connLock.Unlock()
 
@@ -86,12 +83,13 @@ func SendMsg(userId uint64, msg *Msg) {
 
 		bytes, err := json.Marshal(msg)
 		if err != nil {
-			logger.Log.Error("发送消息失败：", err)
-			return
+			return err
 		}
 		err = conn.conn.WriteMessage(websocket.TextMessage, bytes)
 		if err != nil {
-			logger.Log.Error("发送消息失败：", err)
+			return err
 		}
 	}
+
+	return nil
 }

@@ -2,7 +2,7 @@ package starter
 
 import (
 	"database/sql"
-	"github.com/PandaXGO/PandaKit/logger"
+	"github.com/sirupsen/logrus"
 	"time"
 
 	"gorm.io/driver/mysql"
@@ -24,17 +24,20 @@ type DbGorm struct {
 }
 
 func (dg *DbGorm) GormInit() *gorm.DB {
+	var err error
 	switch dg.Type {
 	case "mysql":
-		Db = dg.GormMysql()
+		Db, err = dg.GormMysql()
 	case "postgresql":
-		Db = dg.GormPostgresql()
+		Db, err = dg.GormPostgresql()
+	}
+	if err != nil {
+		logrus.Errorf("数据链接失败: '%s'", err.Error())
 	}
 	return Db
 }
-func (dg *DbGorm) GormMysql() *gorm.DB {
+func (dg *DbGorm) GormMysql() (*gorm.DB, error) {
 
-	logger.Log.Infof("连接mysql [%s]", dg.Dsn)
 	mysqlConfig := mysql.Config{
 		DSN:                       dg.Dsn, // DSN data source name
 		DefaultStringSize:         191,    // string 类型字段的默认长度
@@ -46,27 +49,26 @@ func (dg *DbGorm) GormMysql() *gorm.DB {
 	ormConfig := &gorm.Config{Logger: gormlog.Default.LogMode(gormlog.Silent)}
 	db, err := gorm.Open(mysql.New(mysqlConfig), ormConfig)
 	if err != nil {
-		logger.Log.Panicf("连接mysql失败! [%s]", err.Error())
-		return nil
+		return nil, err
 	}
 	sqlDB, _ := db.DB()
 	sqlDB.SetMaxIdleConns(dg.MaxIdleConns)
 	sqlDB.SetMaxOpenConns(dg.MaxOpenConns)
-	return db
+	return db, nil
 }
 
-func (dg *DbGorm) GormPostgresql() *gorm.DB {
+func (dg *DbGorm) GormPostgresql() (*gorm.DB, error) {
 
 	db, err := sql.Open("postgres", dg.Dsn)
 	if err != nil {
-		logger.Log.Panicf("连接postgresql失败! [%s]", err.Error())
+		return nil, err
 	}
 	ormConfig := &gorm.Config{}
 	gormDb, err := gorm.Open(postgres.New(postgres.Config{
 		Conn: db,
 	}), ormConfig)
 	if err != nil {
-		logger.Log.Panicf("连接postgresql失败! [%s]", err.Error())
+		return nil, err
 	}
 	sqlDB, err := gormDb.DB()
 	// SetMaxIdleConns 设置空闲连接池中连接的最大数量
@@ -76,5 +78,5 @@ func (dg *DbGorm) GormPostgresql() *gorm.DB {
 	// SetConnMaxLifetime 设置了连接可复用的最大时间。
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
-	return gormDb
+	return gormDb, nil
 }

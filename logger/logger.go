@@ -9,10 +9,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var Log *logrus.Logger
-
 func InitLog(fileName, level string) *logrus.Logger {
-	Log = logrus.New()
+	Log := logrus.New()
 	Log.SetFormatter(new(LogFormatter))
 	Log.SetReportCaller(true)
 

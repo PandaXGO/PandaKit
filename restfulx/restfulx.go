@@ -3,7 +3,6 @@ package restfulx
 import (
 	"encoding/json"
 	"github.com/PandaXGO/PandaKit/biz"
-	"github.com/PandaXGO/PandaKit/logger"
 	"github.com/PandaXGO/PandaKit/model"
 	"net/http"
 	"strconv"
@@ -103,13 +102,10 @@ func ErrorRes(response *restful.Response, err any) {
 		break
 	case error:
 		response.WriteEntity(model.ServerError())
-		logger.Log.Error(t)
 		break
 	case string:
 		response.WriteEntity(model.ServerError())
-		logger.Log.Error(t)
 		break
 	default:
-		logger.Log.Error(t)
 	}
 }
