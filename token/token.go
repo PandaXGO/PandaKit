@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type Claims struct {
@@ -18,7 +18,7 @@ type Claims struct {
 	RoleKey        string
 	DeptId         int64
 	PostId         int64
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }
 
 type JWT struct {
@@ -66,17 +66,16 @@ func (j *JWT) ParseToken(tokenString string) (*Claims, error) {
 		return key, nil
 	})
 	if err != nil {
-		if ve, ok := err.(*jwt.ValidationError); ok {
-			if ve.Errors&jwt.ValidationErrorMalformed != 0 {
-				return nil, TokenMalformed
-			} else if ve.Errors&jwt.ValidationErrorExpired != 0 {
-				// Token is expired
-				return nil, TokenExpired
-			} else if ve.Errors&jwt.ValidationErrorNotValidYet != 0 {
-				return nil, TokenNotValidYet
-			} else {
-				return nil, TokenInvalid
-			}
+		// Check if the error is due to specific JWT issues
+		if errors.Is(err, jwt.ErrTokenMalformed) {
+			return nil, TokenMalformed
+		} else if errors.Is(err, jwt.ErrTokenExpired) {
+			// Token is expired
+			return nil, TokenExpired
+		} else if errors.Is(err, jwt.ErrTokenNotValidYet) {
+			return nil, TokenNotValidYet
+		} else {
+			return nil, TokenInvalid
 		}
 	}
 	if token != nil {
@@ -94,9 +93,6 @@ func (j *JWT) ParseToken(tokenString string) (*Claims, error) {
 
 // 更新token
 func (j *JWT) RefreshToken(tokenString string) (string, error) {
-	jwt.TimeFunc = func() time.Time {
-		return time.Unix(0, 0)
-	}
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		key, err := j.getKey()
 		if err != nil {
@@ -109,8 +105,7 @@ func (j *JWT) RefreshToken(tokenString string) (string, error) {
 	}
 
 	if claims, ok := token.Claims.(*Claims); ok && token.Valid {
-		jwt.TimeFunc = time.Now
-		claims.StandardClaims.ExpiresAt = time.Now().Unix() + 60*60*24*7
+		claims.RegisteredClaims.ExpiresAt = jwt.NewNumericDate(time.Now().Add(time.Duration(60 * 60 * 24 * 7)))
 		return j.CreateToken(*claims)
 	}
 	return "", TokenInvalid
