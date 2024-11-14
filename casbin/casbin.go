@@ -43,7 +43,7 @@ func (c *CasbinService) UpdateCasbinApi(oldPath string, newPath string, oldMetho
 
 func (c *CasbinService) GetPolicyPathByRoleId(roleKey string) []CasbinRule {
 	e := c.GetCasbinEnforcer()
-	list := e.GetFilteredPolicy(0, roleKey)
+	list, _ := e.GetFilteredPolicy(0, roleKey)
 	pathMaps := make([]CasbinRule, len(list))
 	for i, v := range list {
 		pathMaps[i] = CasbinRule{
