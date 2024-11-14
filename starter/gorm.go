@@ -3,6 +3,7 @@ package starter
 import (
 	"database/sql"
 	"github.com/sirupsen/logrus"
+	"gorm.io/driver/sqlite"
 	"time"
 
 	"gorm.io/driver/mysql"
@@ -28,6 +29,8 @@ func (dg *DbGorm) GormInit() *gorm.DB {
 	switch dg.Type {
 	case "mysql":
 		Db, err = dg.GormMysql()
+	case "sqlite":
+		Db, err = dg.GormSqlite()
 	case "postgresql":
 		Db, err = dg.GormPostgresql()
 	}
@@ -54,6 +57,14 @@ func (dg *DbGorm) GormMysql() (*gorm.DB, error) {
 	sqlDB, _ := db.DB()
 	sqlDB.SetMaxIdleConns(dg.MaxIdleConns)
 	sqlDB.SetMaxOpenConns(dg.MaxOpenConns)
+	return db, nil
+}
+
+func (dg *DbGorm) GormSqlite() (*gorm.DB, error) {
+	db, err := gorm.Open(sqlite.Open(dg.Dsn), &gorm.Config{})
+	if err != nil {
+		return nil, err
+	}
 	return db, nil
 }
 
