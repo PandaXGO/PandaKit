@@ -3,6 +3,7 @@ package ginx
 import (
 	"github.com/PandaXGO/PandaKit/biz"
 	"github.com/PandaXGO/PandaKit/token"
+	"github.com/go-playground/validator/v10"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -22,9 +23,9 @@ type ReqCtx struct {
 	ReqParam any      // 请求参数，主要用于记录日志
 	ResData  any      // 响应结果
 	Err      any      // 请求错误
-
-	Timed int64 // 执行时间
-	noRes bool  // 无需返回结果，即文件下载等
+	Validate *validator.Validate
+	Timed    int64 // 执行时间
+	noRes    bool  // 无需返回结果，即文件下载等
 }
 
 func (rc *ReqCtx) Handle(handler HandlerFunc) {
@@ -62,12 +63,17 @@ func (rc *ReqCtx) Handle(handler HandlerFunc) {
 
 func (rc *ReqCtx) Download(filename string) {
 	rc.noRes = true
-	Download(rc.GinCtx, filename)
+	Download(rc, filename)
 }
 
 // 新建请求上下文，默认需要校验token
 func NewReqCtx(g *gin.Context) *ReqCtx {
-	return &ReqCtx{GinCtx: g, LogInfo: NewLogInfo("默认日志信息"), RequiredPermission: &Permission{NeedToken: true, NeedCasbin: true}}
+	return &ReqCtx{
+		GinCtx:             g,
+		LogInfo:            NewLogInfo("默认日志信息"),
+		Validate:           validator.New(),
+		RequiredPermission: &Permission{NeedToken: true, NeedCasbin: true},
+	}
 }
 
 // 调用该方法设置请求描述，则默认记录日志，并不记录响应结果
