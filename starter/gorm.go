@@ -33,6 +33,9 @@ func (dg *DbGorm) GormInit() *gorm.DB {
 		Db, err = dg.GormSqlite()
 	case "postgresql":
 		Db, err = dg.GormPostgresql()
+	case "dameng":
+		// 达梦 DM8 启用 MySQL 兼容模式（COMPATIBLE_MODE=1）后，复用 mysql 驱动连接。
+		Db, err = dg.GormMysql()
 	}
 	if err != nil {
 		logrus.Errorf("数据链接失败: '%s'", err.Error())
